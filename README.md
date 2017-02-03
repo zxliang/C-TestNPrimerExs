@@ -1,5 +1,5 @@
 ##### C++ test and Primer Exercise
-##### Project _Leviathan_ or __Kraken__
+##### Project _Leviathan_ or _Kraken_
 ##### A digital playground deeply hidden
 ##### Definitely ~~not~~ for escaping the boring PhD life
 
