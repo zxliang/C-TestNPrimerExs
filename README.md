@@ -13,8 +13,10 @@ git commit -m "..."
 git push master
 ```
 
-02/05/2017 test3() for iteration in unordered_map added
-02/05/2017 bitset<> container to be tested
+02/05/2017: test3() for iteration in unordered_map added <br />
+change line method in markdown language as adding `<br />` or `__` (where `_` is white space) to the end of the line  
+02/05/2017 bitset<> container to be tested __
+
 
 1. abc
   1. edf
