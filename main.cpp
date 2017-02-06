@@ -1,4 +1,5 @@
 #include "CppPrimerHeader.h"
+#include "OpenCVHeader.h"
 
 int main()
 {
@@ -24,7 +25,9 @@ int main()
 
 //  test1();
 //  test2();
-  test3();
+//  test3();
+
+  opencv_test1();
 
   return 0;
 
