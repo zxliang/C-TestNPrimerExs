@@ -6,12 +6,15 @@
 As a **starter**, trying a quote:
 > "No **man** could live forever!"
 
-The code for adding file: `git add`
+The code for adding file: `git add .`
 ```
 git status
-git commit
+git commit -m "..."
+git push master
 ```
 
+02/05/2017 test3() for iteration in unordered_map added
+02/05/2017 bitset container to be tested
 
 1. abc
   1. edf

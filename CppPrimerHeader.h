@@ -2,6 +2,7 @@
 #ifndef CPPPRIMEREXSHEADER_H
 #define CPPPRIMEREXSHEADER_H
 #include <iostream>
+#include <string>
 #include <unordered_map>
 
 using namespace std;
