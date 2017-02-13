@@ -1,8 +1,14 @@
 #include "CppPrimerHeader.h"
 #include "OpenCVHeader.h"
 
-int main()
+int main(int argc, char* argv[])
 {
+	cout << "Program name:" << endl;
+	cout << argv[0] << endl;
+
+	cout << "Number of input parameters: " << endl;
+	cout << argc << endl;
+
 /*
   int a(10), b(15);
   cout << "a: " << a << endl;
