@@ -21,3 +21,26 @@ int opencv_test1()
 
   return 0;
 }
+
+int opencv_test2()
+{
+  VideoCapture cap("SampleVideo.avi"); // open the video file for reading
+
+  if (!cap.isOpened()) // if not success, exit program
+  {
+    cout << "Cannot open the video file" << endl;
+    return -1;
+  }
+
+  //cap.set(CV_CAP_PROP_POS_MSEC, 300); //start the video at 300ms
+  double fps = cap.get(CV_CAP_PROP_FPS); //get the frames per seconds of the video
+  cout << "Frame per seconds: " << fps << endl;
+
+  nameWindow("MyVideo", CV_WINDOW_AUTOSIZE); //create a window called "MyVideo"
+  while (1)
+  {
+    Mat fram;
+  }
+
+  return 0;
+}
