@@ -34,7 +34,8 @@ int main(int argc, char* argv[])
 //  test3();
 
 //  opencv_test1();
-  opencv_test2();
+//  opencv_test2();
+//  opencv_test3();
   return 0;
 
 }

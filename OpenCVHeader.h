@@ -10,5 +10,6 @@ using namespace std;
 // OpenCVTestFunc.cpp
 int opencv_test1();
 int opencv_test2();
+int opencv_test3();
 
 #endif
