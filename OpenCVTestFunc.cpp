@@ -24,7 +24,7 @@ int opencv_test1()
 
 int opencv_test2()
 {
-  VideoCapture cap("SampleVideo.mp4"); // open the video file for reading
+  VideoCapture cap("SampleVideo.avi"); // open the video file for reading
 
   if (!cap.isOpened()) // if not success, exit program
   {
