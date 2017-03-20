@@ -11,5 +11,6 @@ using namespace std;
 int opencv_test1();
 int opencv_test2();
 int opencv_test3();
+int opencv_test4();
 
 #endif
