@@ -3,6 +3,7 @@
 #define OPENCVHEADER_H
 #include "opencv2/highgui/highgui.hpp"
 #include <iostream>
+// #include "stdafx.h"
 
 using namespace cv;
 using namespace std;

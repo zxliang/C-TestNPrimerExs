@@ -3,12 +3,13 @@
 
 int main(int argc, char* argv[])
 {
-	cout << "Program name:" << endl;
-	cout << argv[0] << endl;
+  cout << "Program name:" << endl;
+  cout << argv[0] << endl;
 
-	cout << "Number of input parameters: " << endl;
-	cout << argc << endl;
+  cout << "Number of input parameters: " << endl;
+  cout << argc << endl;
 
+  cout << "start testing functions!" << endl;
 /*
   int a(10), b(15);
   cout << "a: " << a << endl;
