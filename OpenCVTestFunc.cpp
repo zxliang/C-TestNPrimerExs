@@ -285,3 +285,52 @@ int opencv_test6_3()
   return 0;
 }
 
+int opencv_test7()
+{
+  //Read original image
+  Mat src = imread("MyPic.jpg");
+
+  //if fail to read tje image
+  if (!src.data)
+  {
+	cout << "Error loading the image" << endl;
+	return -1;
+  }
+
+  //Create a window
+  namedWindow("My Window", 1);
+
+  //Create trackbar to change brightness
+  int iSliderValue1 = 50;
+  createTrackbar("Brightness", "My Window", &iSliderValue1, 100);
+
+  //Create trackbar to change contrast
+  int iSliderValue2 = 50;
+  createTrackbar("Contrast", "My Window", &iSliderValue2, 100);
+
+  while (true)
+  {
+	//Change the brightness and contrast of the image (For more information
+	//http://opencv-srf.blogspot.com/2013/07/change-contrast-of-image-or-video.html)
+
+	Mat dst;
+	int iBrightness = iSliderValue1 - 50;
+	double dContrast = iSliderValue2 / 50.0;
+	src.convertTo(dst, -1, dContrast, iBrightness);
+
+	//show the brightness and contrast adjusted image
+	imshow("My Window", dst);
+
+	//Wait until user press some key for 50ms
+	int iKey = waitKey(50);
+
+	//if user press 'ESC' key
+	if (iKey == 27)
+	{
+	  break;
+	}
+
+  }
+
+  return 0;
+}

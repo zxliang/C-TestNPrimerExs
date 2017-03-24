@@ -42,7 +42,8 @@ int main(int argc, char* argv[])
 //  opencv_test5();
 //  opencv_test6_1();
 //  opencv_test6_2();
-  opencv_test6_3();
+//  opencv_test6_3();
+  opencv_test7();
 
   return 0;
 
