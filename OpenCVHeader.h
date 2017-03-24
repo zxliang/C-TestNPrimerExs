@@ -15,5 +15,6 @@ int opencv_test2();
 int opencv_test3();
 int opencv_test4();
 int opencv_test5();
+int opencv_test6_1();
 
 #endif
