@@ -1,6 +1,7 @@
 // header file to OpenCV library and function tests
 #ifndef OPENCVHEADER_H
 #define OPENCVHEADER_H
+// #include "opencv2/imgproc/imgproc.hpp"
 #include "opencv2/highgui/highgui.hpp"
 #include <iostream>
 // #include "stdafx.h"
@@ -19,5 +20,9 @@ int opencv_test6_1();
 int opencv_test6_2();
 int opencv_test6_3();
 int opencv_test7();
+
+void MyCallbackForBrightness(int iValueForBrightness, void *userData);
+void MyCallbackForContrast(int iValueForContrast, void *userData);
+int opencv_test8();
 
 #endif
