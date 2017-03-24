@@ -238,6 +238,49 @@ int opencv_test6_1()
   cvDestroyWindow("Eroded");
   cvReleaseImage(&img);
 
+  return 0;
+}
+
+int opencv_test6_2()
+{
+  //display the original image
+  IplImage* img = cvLoadImage("MyPic.jpg");
+  cvNamedWindow("MyWindow");
+  cvShowImage("MyWindow", img);
+
+  //dilate and display the dilated image
+  cvDilate(img, img, 0, 2);
+  cvNamedWindow("Dilated");
+  cvShowImage("Dilated", img);
+
+  cvWaitKey(0);
+
+  //cleaing up
+  cvDestroyWindow("MyWindow");
+  cvDestroyWindow("Dilated");
+  cvReleaseImage(&img);
+  
+  return 0;
+}
+
+int opencv_test6_3()
+{
+  //display the original image
+  IplImage* img = cvLoadImage("MyPic.jpg");
+  cvNamedWindow("MyWindow");
+  cvShowImage("MyWindow", img);
+
+  //invert and display the dilated image
+  cvNot(img, img);
+  cvNamedWindow("Inverted");
+  cvShowImage("Inverted", img);
+
+  cvWaitKey(0);
+
+  //cleaing up
+  cvDestroyWindow("MyWindow");
+  cvDestroyWindow("Inverted");
+  cvReleaseImage(&img);
 
   return 0;
 }
