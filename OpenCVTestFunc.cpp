@@ -412,7 +412,7 @@ int opencv_test8()
   return 0;
 }
 
-void CallBackFunc(int event, int x, int y, int flags, void* userdata)
+void CallBackFunc1(int event, int x, int y, int flags, void* userdata)
 {
   if (event == EVENT_LBUTTONDOWN)
   {
@@ -437,6 +437,26 @@ void CallBackFunc(int event, int x, int y, int flags, void* userdata)
 
 }
 
+void CallBackFunc2(int event, int x, int y, int flags, void* userdata)
+{
+  if (flags == EVENT_FLAG_CTRLKEY + EVENT_FLAG_LBUTTON)
+  {
+	cout << "Left mouse button is clicked while pressing CTRL key - position ("
+	  << x << ", " << y << ")" << endl;
+  }
+  else if (flags == EVENT_FLAG_SHIFTKEY + EVENT_FLAG_RBUTTON)
+  {
+	cout << "Right mouse button is clicked while pressing SHIFT key - position ("
+	  << x << ", " << y << ")" << endl;
+  }
+  else if (event == EVENT_MOUSEMOVE && flags == EVENT_FLAG_ALTKEY)
+  {
+	cout << "Mouse is moved over the window while pressing ALT key - position ("
+	  << x << ", " << y << ")" << endl;
+  }
+
+}
+
 int opencv_test9()
 {
   //Read image from file
@@ -452,8 +472,8 @@ int opencv_test9()
   //Create a window
   namedWindow("My Window", 1);
 
-  //set the callback function for any mouse event
-  setMouseCallback("My Window", CallBackFunc, NULL);
+  //set the callback function 1 or 2 for different mouse event
+  setMouseCallback("My Window", CallBackFunc2, NULL);
 
   //show the image
   imshow("My Window", img);
@@ -461,5 +481,12 @@ int opencv_test9()
   //Wait until user press some key
   waitKey(0);
 
+  return 0;
+}
+
+
+
+int opencv_test10()
+{
   return 0;
 }
