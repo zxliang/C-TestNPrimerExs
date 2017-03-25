@@ -26,4 +26,7 @@ void MyCallbackForBrightness(int iValueForBrightness, void *userData);
 void MyCallbackForContrast(int iValueForContrast, void *userData);
 int opencv_test8();
 
+void CallBackFunc(int event, int x, int y, int flags, void* userdata);
+int opencv_test9();
+
 #endif
