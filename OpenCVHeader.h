@@ -1,7 +1,7 @@
 // header file to OpenCV library and function tests
 #ifndef OPENCVHEADER_H
 #define OPENCVHEADER_H
-// #include "opencv2/imgproc/imgproc.hpp"
+#include "opencv2/imgproc/imgproc.hpp"
 #include "opencv2/highgui/highgui.hpp"
 // #include "opencv2/opencv.hpp"
 #include <iostream>
@@ -27,9 +27,9 @@ void MyCallbackForContrast(int iValueForContrast, void *userData);
 int opencv_test8();
 
 void CallBackFunc1(int event, int x, int y, int flags, void* userdata);
+void CallBackFunc2(int event, int x, int y, int flags, void* userdata);
 int opencv_test9();
 
-void CallBackFunc2(int event, int x, int y, int flags, void* userdata);
 int opencv_test10();
 
 #endif

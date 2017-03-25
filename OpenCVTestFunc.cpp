@@ -488,5 +488,40 @@ int opencv_test9()
 
 int opencv_test10()
 {
+  //Load the image
+  Mat imgOriginal = imread("MyPic.jpg", 1);
+
+  //show the original image
+  const char* pzOriginalImage = "Original Image";
+  namedWindow(pzOriginalImage, CV_WINDOW_AUTOSIZE);
+  imshow(pzOriginalImage, imgOriginal);
+
+  const char* pzRotatedImage = "Rotated Image";
+  namedWindow(pzRotatedImage, CV_WINDOW_AUTOSIZE);
+
+  int iAngle = 180;
+  createTrackbar("Angle", pzRotatedImage, &iAngle, 360);
+
+  int iImageHeight = imgOriginal.rows / 2;
+  int iImageWidth = imgOriginal.cols / 2;
+
+  while (true)
+  {
+	Mat matRotation = getRotationMatrix2D( Point(iImageWidth, iImageHeight),
+	  (iAngle - 180), 1);
+
+	//Rotate the image
+	Mat imgRotated;
+	warpAffine(imgOriginal, imgRotated, matRotation, imgOriginal.size());
+
+	imshow(pzRotatedImage, imgRotated);
+
+	int iRet = waitKey(30);
+	if (iRet == 27)
+	{
+	  break;
+	}
+  }
+
   return 0;
 }
