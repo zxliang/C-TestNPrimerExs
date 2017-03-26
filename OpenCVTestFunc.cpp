@@ -484,8 +484,6 @@ int opencv_test9()
   return 0;
 }
 
-
-
 int opencv_test10()
 {
   //Load the image
@@ -522,6 +520,55 @@ int opencv_test10()
 	  break;
 	}
   }
+
+  return 0;
+}
+
+int iAngle = 180;
+int iScale = 50;
+int iBorderMode = 0;
+Mat imgOriginal;
+int iImageCenterY = 0;
+int iImageCenterX = 0;
+const char* pzRotatedImage = "Rotated Image";
+
+void CallbackForTrackBar(int, void*)
+{
+  Mat matRotation = getRotationMatrix2D(Point(iImageCenterX, iImageCenterY),
+	(iAngle - 180), iScale / 50.0);
+
+  //Rotate the image
+  Mat imgRotated;
+  warpAffine(imgOriginal, imgRotated, matRotation, imgOriginal.size(),
+	INTER_LINEAR, iBorderMode, Scalar());
+
+  imshow(pzRotatedImage, imgRotated);
+}
+
+int opencv_test11()
+{
+  //Load the image
+  imgOriginal = imread("MyPic.jpg", 1);
+
+  iImageCenterY = imgOriginal.rows / 2;
+  iImageCenterX = imgOriginal.cols / 2;
+
+  //show the original image
+  const char* pzOriginalImage = "Original Image";
+  namedWindow(pzOriginalImage, CV_WINDOW_AUTOSIZE);
+  imshow(pzOriginalImage, imgOriginal);
+
+  //create the "Rotated Image" window and 3 trackbars in it
+  namedWindow(pzRotatedImage, CV_WINDOW_AUTOSIZE);
+  createTrackbar("Angle", pzRotatedImage, &iAngle, 360, CallbackForTrackBar);
+  createTrackbar("Scale", pzRotatedImage, &iScale, 100, CallbackForTrackBar);
+  createTrackbar("Border Mode", pzRotatedImage, &iBorderMode, 5, CallbackForTrackBar);
+
+  int iDummy = 0;
+
+  CallbackForTrackBar(iDummy, &iDummy);
+
+  waitKey(0);
 
   return 0;
 }

@@ -29,7 +29,10 @@ int opencv_test8();
 void CallBackFunc1(int event, int x, int y, int flags, void* userdata);
 void CallBackFunc2(int event, int x, int y, int flags, void* userdata);
 int opencv_test9();
-
 int opencv_test10();
+
+void CallbackForTrackBar(int, void*);
+int opencv_test11();
+int opencv_test12();
 
 #endif
