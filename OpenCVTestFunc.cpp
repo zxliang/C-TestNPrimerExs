@@ -572,3 +572,63 @@ int opencv_test11()
 
   return 0;
 }
+
+int opencv_test12()
+{
+  //open the video file for reading
+  VideoCapture cap("SampleVideo.avi");
+
+  //if not success, exit program
+  if (!cap.isOpened())
+  {
+	cout << "Cannot open the video file!" << endl;
+	return -1;
+  }
+
+  const char* pzOriginalWindowName = "Original Video";
+  namedWindow(pzOriginalWindowName, CV_WINDOW_AUTOSIZE);
+
+  const char* pzRotatingWindowName = "Rotated Video";
+  namedWindow(pzRotatingWindowName, CV_WINDOW_AUTOSIZE);
+
+  int iAngle = 180;
+  createTrackbar("Angle", pzRotatingWindowName, &iAngle, 360);
+
+  while (true)
+  {
+	Mat matOriginalFrame;
+
+	//read a new fram from video
+	bool bSuccess = cap.read(matOriginalFrame);
+
+	//if not success, break up
+	if (!bSuccess)
+	{
+	  cout << "Cannot read the frame from video file!" << endl;
+	  break;
+	}
+
+	imshow(pzOriginalWindowName, matOriginalFrame);
+
+	//get the affine trasnformation matrix
+	Mat matRotation = getRotationMatrix2D(Point(matOriginalFrame.cols / 2,
+	  matOriginalFrame.rows / 2), (iAngle - 180), 1);
+
+	//rotate the image
+	Mat matRotatedFrame;
+	warpAffine(matOriginalFrame, matRotatedFrame, matRotation,
+	  matOriginalFrame.size());
+
+	imshow(pzRotatingWindowName, matRotatedFrame);
+
+	//wait for 'esc' key press for 30ms. If 'esc' key is pressed, break loop
+	if (waitKey(30) == 27)
+	{
+	  cout << "esc key is pressed by user" << endl;
+	  break;
+	}
+
+  }
+
+  return 0;
+}
