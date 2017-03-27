@@ -632,3 +632,955 @@ int opencv_test12()
 
   return 0;
 }
+
+int opencv_test13()
+{
+  VideoCapture cap(0); //capture the video from web cam
+  
+  if (!cap.isOpened()) //if not success, exit program
+  {
+	cout << "Cannot opne the web cam!" << endl;
+	return -1;
+  }
+
+  namedWindow("Control", CV_WINDOW_AUTOSIZE); //create a window called "Control"
+
+  int iLowH = 0;
+  int iHighH = 179;
+
+  int iLowS = 0;
+  int iHighS = 255;
+
+  int iLowV = 0;
+  int iHighV = 255;
+
+  //create trackbars in "Control" window
+  cvCreateTrackbar("LowH", "Control", &iLowH, 179); //Hue (0, -179)
+  cvCreateTrackbar("HighH", "Control", &iHighH, 179);
+
+  cvCreateTrackbar("LowS", "Control", &iLowS, 255); //Saturation (0, -255)
+  cvCreateTrackbar("HighS", "Control", &iHighS, 255);
+
+  cvCreateTrackbar("LowV", "Control", &iLowV, 255); //Value (0, -255)
+  cvCreateTrackbar("HighV", "Control", &iHighV, 255);
+
+  while (true)
+  {
+	Mat imgOriginal;
+
+	bool bSuccess = cap.read(imgOriginal); //read a new frame from video
+
+	if (!bSuccess) //i fnot success, break loop
+	{
+	  cout << "Cannot read a frame from video stream!" << endl;
+	  break;
+	}
+
+	Mat imgHSV;
+
+	//convert the captured from from BGR to HSV
+	cvtColor(imgOriginal, imgHSV, COLOR_BGR2HSV); 
+  
+	Mat imgThresholded;
+
+	inRange(imgHSV, Scalar(iLowH, iLowS, iLowV), Scalar(iHighH, iHighS, iHighV),
+	  imgThresholded); //Threshold the image
+
+	//morphological opening (remove small objects from the foreground)
+	erode(imgThresholded, imgThresholded, getStructuringElement(MORPH_ELLIPSE,
+	  Size(5, 5)));
+	dilate(imgThresholded, imgThresholded, getStructuringElement(MORPH_ELLIPSE,
+	  Size(5, 5)));
+
+	//morphological closing (fill small holes in the foreground)
+	dilate(imgThresholded, imgThresholded, getStructuringElement(MORPH_ELLIPSE,
+	  Size(5, 5)));
+	erode(imgThresholded, imgThresholded, getStructuringElement(MORPH_ELLIPSE,
+	  Size(5, 5)));
+
+	imshow("Thresholded Image", imgThresholded); //show the thresholded image
+	imshow("Original", imgOriginal); //show the original image
+
+	if (waitKey(30) == 27) //wait for 'esc' key press for 30ms. If 'esc' key pressed, break loop
+	{
+	  cout << "esc key is pressed by user" << endl;
+	  break;
+	}
+  }
+
+  return 0;
+}
+
+int opencv_test14()
+{
+  VideoCapture cap(0); //capture the video from webcam
+
+  if (!cap.isOpened())  // if not success, exit program
+  {
+	cout << "Cannot open the web cam" << endl;
+	return -1;
+  }
+
+  namedWindow("Control", CV_WINDOW_AUTOSIZE); //create a window called "Control"
+
+  int iLowH = 170;
+  int iHighH = 179;
+
+  int iLowS = 150;
+  int iHighS = 255;
+
+  int iLowV = 60;
+  int iHighV = 255;
+
+  //Create trackbars in "Control" window
+  createTrackbar("LowH", "Control", &iLowH, 179); //Hue (0 - 179)
+  createTrackbar("HighH", "Control", &iHighH, 179);
+
+  createTrackbar("LowS", "Control", &iLowS, 255); //Saturation (0 - 255)
+  createTrackbar("HighS", "Control", &iHighS, 255);
+
+  createTrackbar("LowV", "Control", &iLowV, 255);//Value (0 - 255)
+  createTrackbar("HighV", "Control", &iHighV, 255);
+
+  int iLastX = -1;
+  int iLastY = -1;
+
+  //Capture a temporary image from the camera
+  Mat imgTmp;
+  cap.read(imgTmp);
+
+  //Create a black image with the size as the camera output
+  Mat imgLines = Mat::zeros(imgTmp.size(), CV_8UC3);;
+
+  while (true)
+  {
+	Mat imgOriginal;
+
+	bool bSuccess = cap.read(imgOriginal); // read a new frame from video
+
+	if (!bSuccess) //if not success, break loop
+	{
+	  cout << "Cannot read a frame from video stream" << endl;
+	  break;
+	}
+
+	Mat imgHSV;
+
+	cvtColor(imgOriginal, imgHSV, COLOR_BGR2HSV); //Convert the captured frame from BGR to HSV
+
+	Mat imgThresholded;
+
+	inRange(imgHSV, Scalar(iLowH, iLowS, iLowV), Scalar(iHighH, iHighS, iHighV)
+	  , imgThresholded); //Threshold the image
+
+	erode(imgThresholded, imgThresholded, getStructuringElement(MORPH_ELLIPSE, 
+	  Size(5, 5)));
+	dilate(imgThresholded, imgThresholded, getStructuringElement(MORPH_ELLIPSE, 
+	  Size(5, 5)));
+
+	//morphological closing (removes small holes from the foreground)
+	dilate(imgThresholded, imgThresholded, getStructuringElement(MORPH_ELLIPSE, 
+	  Size(5, 5)));
+	erode(imgThresholded, imgThresholded, getStructuringElement(MORPH_ELLIPSE, 
+	  Size(5, 5)));
+
+	//Calculate the moments of the thresholded image
+	Moments oMoments = moments(imgThresholded);
+
+	double dM01 = oMoments.m01;
+	double dM10 = oMoments.m10;
+	double dArea = oMoments.m00;
+
+	// if the area <= 10000, I consider that the there are no object in the image and it's because of the noise, the area is not zero 
+	if (dArea > 10000)
+	{
+	  //calculate the position of the ball
+	  int posX = dM10 / dArea;
+	  int posY = dM01 / dArea;
+
+	  if (iLastX >= 0 && iLastY >= 0 && posX >= 0 && posY >= 0)
+	  {
+		//Draw a red line from the previous point to the current point
+		line(imgLines, Point(posX, posY), Point(iLastX, iLastY), Scalar(0, 0, 255), 2);
+	  }
+
+	  iLastX = posX;
+	  iLastY = posY;
+	}
+
+	imshow("Thresholded Image", imgThresholded); //show the thresholded image
+
+	imgOriginal = imgOriginal + imgLines;
+	imshow("Original", imgOriginal); //show the original image
+
+	if (waitKey(30) == 27) //wait for 'esc' key press for 30ms. If 'esc' key is pressed, break loop
+	{
+	  cout << "esc key is pressed by user" << endl;
+	  break;
+	}
+  }
+
+  return 0;
+}
+
+int opencv_test15()
+{
+  IplImage* img = cvLoadImage("FindingContours.png");
+
+  //show the original image
+  cvNamedWindow("Raw");
+  cvShowImage("Raw", img);
+
+  //converting the original image into grayscale
+  IplImage* imgGrayScale = cvCreateImage(cvGetSize(img), 8, 1);
+  cvCvtColor(img, imgGrayScale, CV_BGR2GRAY);
+
+  //thresholding the grayscale image to get better results
+  cvThreshold(imgGrayScale, imgGrayScale, 128, 255, CV_THRESH_BINARY);
+
+  CvSeq* contours;  //hold the pointer to a contour in the memory block
+  CvSeq* result;   //hold sequence of points of a contour
+  CvMemStorage *storage = cvCreateMemStorage(0); //storage area for all contours
+
+  //finding all contours in the image
+  cvFindContours(imgGrayScale, storage, &contours, sizeof(CvContour), 
+	CV_RETR_LIST, CV_CHAIN_APPROX_SIMPLE, cvPoint(0, 0));
+
+  //iterating through each contour
+  while (contours)
+  {
+	//obtain a sequence of points of contour, pointed by the variable 'contour'
+	result = cvApproxPoly(contours, sizeof(CvContour), storage, CV_POLY_APPROX_DP, 
+	  cvContourPerimeter(contours)*0.02, 0);
+
+	//if there are 3  vertices  in the contour(It should be a triangle)
+	if (result->total == 3)
+	{
+	  //iterating through each point
+	  CvPoint *pt[3];
+	  for (int i = 0; i<3; i++) {
+		pt[i] = (CvPoint*)cvGetSeqElem(result, i);
+	  }
+
+	  //drawing lines around the triangle
+	  cvLine(img, *pt[0], *pt[1], cvScalar(255, 0, 0), 4);
+	  cvLine(img, *pt[1], *pt[2], cvScalar(255, 0, 0), 4);
+	  cvLine(img, *pt[2], *pt[0], cvScalar(255, 0, 0), 4);
+
+	}
+
+	//if there are 4 vertices in the contour(It should be a quadrilateral)
+	else if (result->total == 4)
+	{
+	  //iterating through each point
+	  CvPoint *pt[4];
+	  for (int i = 0; i<4; i++) {
+		pt[i] = (CvPoint*)cvGetSeqElem(result, i);
+	  }
+
+	  //drawing lines around the quadrilateral
+	  cvLine(img, *pt[0], *pt[1], cvScalar(0, 255, 0), 4);
+	  cvLine(img, *pt[1], *pt[2], cvScalar(0, 255, 0), 4);
+	  cvLine(img, *pt[2], *pt[3], cvScalar(0, 255, 0), 4);
+	  cvLine(img, *pt[3], *pt[0], cvScalar(0, 255, 0), 4);
+	}
+
+	//if there are 7  vertices  in the contour(It should be a heptagon)
+	else if (result->total == 7)
+	{
+	  //iterating through each point
+	  CvPoint *pt[7];
+	  for (int i = 0; i<7; i++) {
+		pt[i] = (CvPoint*)cvGetSeqElem(result, i);
+	  }
+
+	  //drawing lines around the heptagon
+	  cvLine(img, *pt[0], *pt[1], cvScalar(0, 0, 255), 4);
+	  cvLine(img, *pt[1], *pt[2], cvScalar(0, 0, 255), 4);
+	  cvLine(img, *pt[2], *pt[3], cvScalar(0, 0, 255), 4);
+	  cvLine(img, *pt[3], *pt[4], cvScalar(0, 0, 255), 4);
+	  cvLine(img, *pt[4], *pt[5], cvScalar(0, 0, 255), 4);
+	  cvLine(img, *pt[5], *pt[6], cvScalar(0, 0, 255), 4);
+	  cvLine(img, *pt[6], *pt[0], cvScalar(0, 0, 255), 4);
+	}
+
+	//obtain the next contour
+	contours = contours->h_next;
+  }
+
+  //show the image in which identified shapes are marked   
+  cvNamedWindow("Tracked");
+  cvShowImage("Tracked", img);
+
+  cvWaitKey(0); //wait for a key press
+
+  //cleaning up
+  cvDestroyAllWindows();
+  cvReleaseMemStorage(&storage);
+  cvReleaseImage(&img);
+  cvReleaseImage(&imgGrayScale);
+
+  return 0;
+}
+
+int opencv_test16()
+{
+  IplImage* img = cvLoadImage("DetectingContours.jpg");
+
+  //show the original image
+  cvNamedWindow("Original");
+  cvShowImage("Original", img);
+
+  //smooth the original image using Gaussian kernel to remove noise
+  cvSmooth(img, img, CV_GAUSSIAN, 3, 3);
+
+  //converting the original image into grayscale
+  IplImage* imgGrayScale = cvCreateImage(cvGetSize(img), 8, 1);
+  cvCvtColor(img, imgGrayScale, CV_BGR2GRAY);
+
+  cvNamedWindow("GrayScale Image");
+  cvShowImage("GrayScale Image", imgGrayScale);
+
+  //thresholding the grayscale image to get better results
+  cvThreshold(imgGrayScale, imgGrayScale, 100, 255, CV_THRESH_BINARY_INV);
+
+  cvNamedWindow("Thresholded Image");
+  cvShowImage("Thresholded Image", imgGrayScale);
+
+  CvSeq* contour;  //hold the pointer to a contour
+  CvSeq* result;   //hold sequence of points of a contour
+  CvMemStorage *storage = cvCreateMemStorage(0); //storage area for all contours
+
+  //finding all contours in the image
+  cvFindContours(imgGrayScale, storage, &contour, sizeof(CvContour), 
+	CV_RETR_LIST, CV_CHAIN_APPROX_SIMPLE, cvPoint(0, 0));
+
+  //iterating through each contour
+  while (contour)
+  {
+	//obtain a sequence of points of the countour, pointed by the variable 'countour'
+	result = cvApproxPoly(contour, sizeof(CvContour), storage, 
+	  CV_POLY_APPROX_DP, cvContourPerimeter(contour)*0.02, 0);
+
+	//if there are 3 vertices  in the contour and the area of the triangle is more than 100 pixels
+	if (result->total == 3 && fabs(cvContourArea(result, CV_WHOLE_SEQ))>100)
+	{
+	  //iterating through each point
+	  CvPoint *pt[3];
+	  for (int i = 0; i<3; i++) {
+		pt[i] = (CvPoint*)cvGetSeqElem(result, i);
+	  }
+
+	  //drawing lines around the triangle
+	  cvLine(img, *pt[0], *pt[1], cvScalar(255, 0, 0), 4);
+	  cvLine(img, *pt[1], *pt[2], cvScalar(255, 0, 0), 4);
+	  cvLine(img, *pt[2], *pt[0], cvScalar(255, 0, 0), 4);
+
+	}
+
+	//obtain the next contour
+	contour = contour->h_next;
+  }
+
+  //show the image in which identified shapes are marked   
+  cvNamedWindow("Tracked");
+  cvShowImage("Tracked", img);
+
+  cvWaitKey(0); //wait for a key press
+
+  //cleaning up
+  cvDestroyAllWindows();
+  cvReleaseMemStorage(&storage);
+  cvReleaseImage(&img);
+  cvReleaseImage(&imgGrayScale);
+
+  return 0;
+}
+
+IplImage* imgTracking = 0;
+
+int lastX1 = -1;
+int lastY1 = -1;
+
+int lastX2 = -1;
+int lastY2 = -1;
+
+void trackObject(IplImage* imgThresh) {
+  CvSeq* contour;  //hold the pointer to a contour
+  CvSeq* result;     //hold sequence of points of a contour
+  CvMemStorage *storage = cvCreateMemStorage(0); //storage area for all contours
+
+												 //finding all contours in the image
+  cvFindContours(imgThresh, storage, &contour, sizeof(CvContour), CV_RETR_LIST, 
+	CV_CHAIN_APPROX_SIMPLE, cvPoint(0, 0));
+
+  //iterating through each contour
+  while (contour)
+  {
+	//obtain a sequence of points of the countour, pointed by the variable 'countour'
+	result = cvApproxPoly(contour, sizeof(CvContour), storage, CV_POLY_APPROX_DP, 
+	  cvContourPerimeter(contour)*0.02, 0);
+
+	//if there are 3 vertices  in the contour and the area of the triangle is more than 100 pixels
+	if (result->total == 3 && fabs(cvContourArea(result, CV_WHOLE_SEQ))>100)
+	{
+	  //iterating through each point
+	  CvPoint *pt[3];
+	  for (int i = 0; i<3; i++) {
+		pt[i] = (CvPoint*)cvGetSeqElem(result, i);
+	  }
+
+	  int posX = (pt[0]->x + pt[1]->x + pt[2]->x) / 3;
+	  int posY = (pt[0]->y + pt[1]->y + pt[2]->y) / 3;
+
+	  if (posX > 360) {
+		if (lastX1 >= 0 && lastY1 >= 0 && posX >= 0 && posY >= 0) {
+		  // Draw a red line from the previous point to the current point
+		  cvLine(imgTracking, cvPoint(posX, posY), cvPoint(lastX1, lastY1), 
+			cvScalar(0, 0, 255), 4);
+		}
+
+		lastX1 = posX;
+		lastY1 = posY;
+	  }
+	  else {
+		if (lastX2 >= 0 && lastY2 >= 0 && posX >= 0 && posY >= 0) {
+		  // Draw a blue line from the previous point to the current point
+		  cvLine(imgTracking, cvPoint(posX, posY), cvPoint(lastX2, lastY2), cvScalar(255, 0, 0), 4);
+		}
+
+		lastX2 = posX;
+		lastY2 = posY;
+	  }
+	}
+
+	//obtain the next contour
+	contour = contour->h_next;
+  }
+
+  cvReleaseMemStorage(&storage);
+}
+
+
+int opencv_test17() {
+  //load the video file to the memory
+  CvCapture *capture = cvCaptureFromAVI("SampleVideo.avi");
+
+  if (!capture) {
+	printf("Capture failure\n");
+	return -1;
+  }
+
+  IplImage* frame = 0;
+  frame = cvQueryFrame(capture);
+  if (!frame) return -1;
+
+  //create a blank image and assigned to 'imgTracking' which has the same size of original video
+  imgTracking = cvCreateImage(cvGetSize(frame), IPL_DEPTH_8U, 3);
+  cvZero(imgTracking); //covert the image, 'imgTracking' to black
+
+  cvNamedWindow("Video");
+
+  //iterate through each frames of the video     
+  while (true) {
+
+	frame = cvQueryFrame(capture);
+	if (!frame) break;
+	frame = cvCloneImage(frame);
+
+	//smooth the original image using Gaussian kernel
+	cvSmooth(frame, frame, CV_GAUSSIAN, 3, 3);
+
+	//converting the original image into grayscale
+	IplImage* imgGrayScale = cvCreateImage(cvGetSize(frame), 8, 1);
+	cvCvtColor(frame, imgGrayScale, CV_BGR2GRAY);
+
+	//thresholding the grayscale image to get better results
+	cvThreshold(imgGrayScale, imgGrayScale, 100, 255, CV_THRESH_BINARY_INV);
+
+	//track the possition of the ball
+	trackObject(imgGrayScale);
+
+	// Add the tracking image and the frame
+	cvAdd(frame, imgTracking, frame);
+
+	cvShowImage("Video", frame);
+
+	//Clean up used images
+	cvReleaseImage(&imgGrayScale);
+	cvReleaseImage(&frame);
+
+	//Wait 10mS
+	int c = cvWaitKey(10);
+	//If 'ESC' is pressed, break the loop
+	if ((char)c == 27) break;
+  }
+
+  cvDestroyAllWindows();
+  cvReleaseImage(&imgTracking);
+  cvReleaseCapture(&capture);
+
+  return 0;
+}
+
+int HomogeneousSmoothing()
+{
+  //create 2 empty windows
+  namedWindow("Original Image", CV_WINDOW_AUTOSIZE);
+  namedWindow("Smoothed Image", CV_WINDOW_AUTOSIZE);
+
+  // Load an image from file
+  Mat src = imread("MyPic.JPG", 1);
+
+  //show the loaded image
+  imshow("Original Image", src);
+
+  Mat dst;
+  char zBuffer[35];
+
+  for (int i = 1; i < 31; i = i + 2)
+  {
+	//copy the text to the "zBuffer"
+	_snprintf_s(zBuffer, 35, "Kernel Size : %d x %d", i, i);
+
+	//smooth the image in the "src" and save it to "dst"
+	blur(src, dst, Size(i, i));
+
+	//put the text in the "zBuffer" to the "dst" image
+	putText(dst, zBuffer, Point(src.cols / 4, src.rows / 8), 
+	  CV_FONT_HERSHEY_COMPLEX, 1, Scalar(255, 255, 255));
+
+	//show the blurred image with the text
+	imshow("Smoothed Image", dst);
+
+	//wait for 2 seconds
+	int c = waitKey(2000);
+
+	//if the "esc" key is pressed during the wait, return
+	if (c == 27)
+	{
+	  return 0;
+	}
+  }
+
+  //make the "dst" image, black
+  dst = Mat::zeros(src.size(), src.type());
+
+  //copy the text to the "zBuffer"
+  _snprintf_s(zBuffer, 35, "Press Any Key to Exit");
+
+  //put the text in the "zBuffer" to the "dst" image
+  putText(dst, zBuffer, Point(src.cols / 4, src.rows / 2), 
+	CV_FONT_HERSHEY_COMPLEX, 1, Scalar(255, 255, 255));
+
+  //show the black image with the text
+  imshow("Smoothed Image", dst);
+
+  //wait for a key press infinitely
+  waitKey(0);
+
+  return 0;
+
+}
+
+int GaussianSmoothing()
+{
+  //create 2 empty windows
+  namedWindow("Original Image", CV_WINDOW_AUTOSIZE);
+  namedWindow("Smoothed Image", CV_WINDOW_AUTOSIZE);
+
+  // Load an image from file
+  Mat src = imread("MyPic.JPG", CV_LOAD_IMAGE_UNCHANGED);
+
+  //show the loaded image
+  imshow("Original Image", src);
+
+  Mat dst;
+  char zBuffer[35];
+
+  for (int i = 1; i < 31; i = i + 2)
+  {
+	//copy the text to the "zBuffer"
+	_snprintf_s(zBuffer, 35, "Kernel Size : %d x %d", i, i);
+
+	//smooth the image using Gaussian kernel in the "src" and save it to "dst"
+	GaussianBlur(src, dst, Size(i, i), 0, 0);
+
+	//put the text in the "zBuffer" to the "dst" image
+	putText(dst, zBuffer, Point(src.cols / 4, src.rows / 8), 
+	  CV_FONT_HERSHEY_COMPLEX, 1, Scalar(255, 255, 255), 2);
+
+	//show the blurred image with the text
+	imshow("Smoothed Image", dst);
+
+	//wait for 2 seconds
+	int c = waitKey(2000);
+
+	//if the "esc" key is pressed during the wait, return
+	if (c == 27)
+	{
+	  return 0;
+	}
+  }
+
+  //make the "dst" image, black
+  dst = Mat::zeros(src.size(), src.type());
+
+  //copy the text to the "zBuffer"
+  _snprintf_s(zBuffer, 35, "Press Any Key to Exit");
+
+  //put the text in the "zBuffer" to the "dst" image
+  putText(dst, zBuffer, Point(src.cols / 4, src.rows / 2), 
+	CV_FONT_HERSHEY_COMPLEX, 1, Scalar(255, 255, 255));
+
+  //show the black image with the text
+  imshow("Smoothed Image", dst);
+
+  //wait for a key press infinitely
+  waitKey(0);
+
+  return 0;
+}
+
+int MedianSmoothing()
+{
+  //create 2 empty windows
+  namedWindow("Original Image", CV_WINDOW_AUTOSIZE);
+  namedWindow("Smoothed Image", CV_WINDOW_AUTOSIZE);
+
+  // Load an image from file
+  Mat src = imread("MyPic.JPG", CV_LOAD_IMAGE_UNCHANGED);
+
+  //show the loaded image
+  imshow("Original Image", src);
+
+  Mat dst;
+  char zBuffer[35];
+
+  for (int i = 1; i < 31; i = i + 2)
+  {
+	//copy the text to the "zBuffer"
+	_snprintf_s(zBuffer, 35, "Kernel Size : %d x %d", i, i);
+
+	//smooth the image using Median kernel in the "src" and save it to "dst"
+	medianBlur(src, dst, i);
+
+	//put the text in the "zBuffer" to the "dst" image
+	putText(dst, zBuffer, Point(src.cols / 4, src.rows / 8), 
+	  CV_FONT_HERSHEY_COMPLEX, 1, Scalar(255, 255, 255), 2);
+
+	//show the blurred image with the text
+	imshow("Smoothed Image", dst);
+
+	//wait for 2 seconds
+	int c = waitKey(2000);
+
+	//if the "esc" key is pressed during the wait, return
+	if (c == 27)
+	{
+	  return 0;
+	}
+  }
+
+  //make the "dst" image, black
+  dst = Mat::zeros(src.size(), src.type());
+
+  //copy the text to the "zBuffer"
+  _snprintf_s(zBuffer, 35, "Press Any Key to Exit");
+
+  //put the text in the "zBuffer" to the "dst" image
+  putText(dst, zBuffer, Point(src.cols / 4, src.rows / 2), 
+	CV_FONT_HERSHEY_COMPLEX, 1, Scalar(255, 255, 255));
+
+  //show the black image with the text
+  imshow("Smoothed Image", dst);
+
+  //wait for a key press infinitely
+  waitKey(0);
+
+  return 0;
+}
+
+int BilateralSmoothing()
+{
+  //create 2 empty windows
+  namedWindow("Original Image", CV_WINDOW_AUTOSIZE);
+  namedWindow("Smoothed Image", CV_WINDOW_AUTOSIZE);
+
+  // Load an image from file
+  Mat src = imread("MyPic.JPG", CV_LOAD_IMAGE_UNCHANGED);
+
+  //show the loaded image
+  imshow("Original Image", src);
+
+  Mat dst;
+  char zBuffer[35];
+
+  for (int i = 1; i < 31; i = i + 2)
+  {
+	//copy the text to the "zBuffer"
+	_snprintf_s(zBuffer, 35, "Kernel Size : %d x %d", i, i);
+
+	//smooth the image using Bilateral filter in the "src" and save it to "dst"
+	bilateralFilter(src, dst, i, i, i);
+
+	//put the text in the "zBuffer" to the "dst" image
+	putText(dst, zBuffer, Point(src.cols / 4, src.rows / 8), 
+	  CV_FONT_HERSHEY_COMPLEX, 1, Scalar(255, 255, 255), 2);
+
+	//show the blurred image with the text
+	imshow("Smoothed Image", dst);
+
+	//wait for 2 seconds
+	int c = waitKey(2000);
+
+	//if the "esc" key is pressed during the wait, return
+	if (c == 27)
+	{
+	  return 0;
+	}
+  }
+
+  //make the "dst" image, black
+  dst = Mat::zeros(src.size(), src.type());
+
+  //copy the text to the "zBuffer"
+  _snprintf_s(zBuffer, 35, "Press Any Key to Exit");
+
+  //put the text in the "zBuffer" to the "dst" image
+  putText(dst, zBuffer, Point(src.cols / 4, src.rows / 2), 
+	CV_FONT_HERSHEY_COMPLEX, 1, Scalar(255, 255, 255));
+
+  //show the black image with the text
+  imshow("Smoothed Image", dst);
+
+  //wait for a key press infinitely
+  waitKey(0);
+
+  return 0;
+}
+
+int ImageContrastChange()
+{
+  Mat img = imread("MyPic.JPG", CV_LOAD_IMAGE_COLOR); //open and read the image
+
+
+  if (img.empty())
+  {
+	cout << "Image cannot be loaded..!!" << endl;
+	return -1;
+  }
+
+  Mat imgH;
+  img.convertTo(imgH, -1, 2, 0); //increase the contrast (double)
+
+  Mat imgL;
+  img.convertTo(imgL, -1, 0.5, 0); //decrease the contrast (halve)
+
+								   //create windows
+  namedWindow("Original Image", CV_WINDOW_AUTOSIZE);
+  namedWindow("High Contrast", CV_WINDOW_AUTOSIZE);
+  namedWindow("Low Contrast", CV_WINDOW_AUTOSIZE);
+
+  //show the image
+  imshow("Original Image", img);
+  imshow("High Contrast", imgH);
+  imshow("Low Contrast", imgL);
+
+  waitKey(0); //wait for key press
+
+  destroyAllWindows(); //destroy all open windows
+
+  return 0;
+}
+
+
+int VideoContrastChange()
+{
+  VideoCapture cap("SampleVideo.avi"); // open the video file for reading
+
+  if (!cap.isOpened())  // if not success, exit program
+  {
+	cout << "Cannot open the video file" << endl;
+	return -1;
+  }
+
+  //create windows
+  namedWindow("Original Video", CV_WINDOW_AUTOSIZE);
+  namedWindow("Contrast Increased", CV_WINDOW_AUTOSIZE);
+  namedWindow("Contrast Decreased", CV_WINDOW_AUTOSIZE);
+
+  while (1)
+  {
+	Mat frame;
+
+	bool bSuccess = cap.read(frame); // read a new frame from video
+
+	if (!bSuccess) //if not success, break loop
+	{
+	  cout << "Cannot read the frame from video file" << endl;
+	  break;
+	}
+
+	Mat imgH;
+	frame.convertTo(imgH, -1, 2, 0); //increase the contrast (double)
+
+	Mat imgL;
+	frame.convertTo(imgL, -1, 0.5, 0); //decrease the contrast (halve)
+
+									   //show the image
+	imshow("Original Video", frame);
+	imshow("Contrast Increased", imgH);
+	imshow("Contrast Decreased", imgL);
+
+	if (waitKey(30) == 27) //wait for 'esc' key press for 30 ms. If 'esc' key is pressed, break loop
+	{
+	  cout << "esc key is pressed by user" << endl;
+	  break;
+	}
+  }
+  return 0;
+}
+
+int HistogramEqualizationGrayscaleImage()
+{
+  Mat img = imread("MyPic.jpg", CV_LOAD_IMAGE_COLOR); //open and read the image
+
+  if (img.empty())
+  {
+	cout << "Image cannot be loaded..!!" << endl;
+	return -1;
+  }
+
+  cvtColor(img, img, CV_BGR2GRAY); //change the color image to grayscale image
+
+  Mat img_hist_equalized;
+  equalizeHist(img, img_hist_equalized); //equalize the histogram
+
+  //create windows
+  namedWindow("Original Image", CV_WINDOW_AUTOSIZE);
+  namedWindow("Histogram Equalized", CV_WINDOW_AUTOSIZE);
+
+  //show the image
+  imshow("Original Image", img);
+  imshow("Histogram Equalized", img_hist_equalized);
+
+  waitKey(0); //wait for key press
+
+  destroyAllWindows(); //destroy all open windows
+
+  return 0;
+}
+
+int HistogramEqualizationColorImage()
+{
+  Mat img = imread("MyPic.JPG", CV_LOAD_IMAGE_COLOR); //open and read the image
+
+  if (img.empty()) //if unsuccessful, exit the program
+  {
+	cout << "Image cannot be loaded..!!" << endl;
+	return -1;
+  }
+
+  vector<Mat> channels;
+  Mat img_hist_equalized;
+
+  cvtColor(img, img_hist_equalized, CV_BGR2YCrCb); //change the color image from BGR to YCrCb format
+
+  split(img_hist_equalized, channels); //split the image into channels
+
+  equalizeHist(channels[0], channels[0]); //equalize histogram on the 1st channel (Y)
+
+  merge(channels, img_hist_equalized); //merge 3 channels including the modified 1st channel into one image
+
+  cvtColor(img_hist_equalized, img_hist_equalized, CV_YCrCb2BGR); //change the color image from YCrCb to BGR format (to display image properly)
+
+  //create windows
+  namedWindow("Original Image", CV_WINDOW_AUTOSIZE);
+  namedWindow("Histogram Equalized", CV_WINDOW_AUTOSIZE);
+
+  //show the image
+  imshow("Original Image", img);
+  imshow("Histogram Equalized", img_hist_equalized);
+
+  waitKey(0); //wait for key press
+
+  destroyAllWindows(); //destroy all open windows
+
+  return 0;
+}
+
+int ImageBrightnesChange()
+{
+  Mat img = imread("MyPic.jpg", CV_LOAD_IMAGE_COLOR);
+
+  if (img.empty())
+  {
+	cout << "Image cannot be loaded..!!" << endl;
+	return -1;
+  }
+
+  Mat imgH = img + Scalar(75, 75, 75); //increase the brightness by 75 units
+									   //img.convertTo(imgH, -1, 1, 75);
+
+  Mat imgL = img + Scalar(-75, -75, -75); //decrease the brightness by 75 units
+										  //img.convertTo(imgL, -1, 1, -75);
+
+  namedWindow("Original Image", CV_WINDOW_AUTOSIZE);
+  namedWindow("High Brightness", CV_WINDOW_AUTOSIZE);
+  namedWindow("Low Brightness", CV_WINDOW_AUTOSIZE);
+
+  imshow("Original Image", img);
+  imshow("High Brightness", imgH);
+  imshow("Low Brightness", imgL);
+
+  waitKey(0);
+
+  destroyAllWindows(); //destroy all open windows
+
+  return 0;
+}
+
+int VideoBrightnessChange()
+{
+  VideoCapture cap("SampleVideo.avi"); // open the video file for reading
+
+  if (!cap.isOpened())  // if not success, exit program
+  {
+	cout << "Cannot open the video file" << endl;
+	return -1;
+  }
+
+  namedWindow("Original Video", CV_WINDOW_AUTOSIZE); //create a window called "Original Video"
+  namedWindow("Brightness Increased", CV_WINDOW_AUTOSIZE); //create a window called "Brightness Increased"
+  namedWindow("Brightness Decreased", CV_WINDOW_AUTOSIZE); //create a window called "Brightness Decreased"
+
+  while (1)
+  {
+	Mat frame;
+
+	bool bSuccess = cap.read(frame); // read a new frame from video
+
+	if (!bSuccess) //if not success, break loop
+	{
+	  cout << "Cannot read the frame from video file" << endl;
+	  break;
+	}
+
+	Mat imgH = frame + Scalar(50, 50, 50); //increase the brightness by 75 units
+
+	Mat imgL = frame + Scalar(-50, -50, -50); //decrease the brightness by 75 units
+
+	imshow("Original Video", frame); //show the frame in "Original Video" window
+	imshow("Brightness Increased", imgH); //show the frame of which brightness increased
+	imshow("Brightness Decreased", imgL); //show the frame of which brightness decreased
+
+	if (waitKey(30) == 27) //wait for 'esc' key press for 30 ms. If 'esc' key is pressed, break loop
+	{
+	  cout << "esc key is pressed by user" << endl;
+	  break;
+	}
+  }
+
+  return 0;
+}

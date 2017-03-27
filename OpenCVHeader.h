@@ -34,5 +34,26 @@ int opencv_test10();
 void CallbackForTrackBar(int, void*);
 int opencv_test11();
 int opencv_test12();
+int opencv_test13();
+int opencv_test14();
+int opencv_test15();
+int opencv_test16();
+
+void trackObject(IplImage* imgThresh);
+int opencv_test17();
+
+int HomogeneousSmoothing();
+int GaussianSmoothing();
+int MedianSmoothing();
+int BilateralSmoothing();
+
+int ImageContrastChange();
+int VideoContrastChange();
+
+int HistogramEqualizationGrayscaleImage();
+int HistogramEqualizationColorImage();
+
+int ImageBrightnesChange();
+int VideoBrightnessChange();
 
 #endif

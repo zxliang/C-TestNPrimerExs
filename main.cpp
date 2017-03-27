@@ -48,7 +48,26 @@ int main(int argc, char* argv[])
 //  opencv_test9();
 //  opencv_test10();
 //  opencv_test11();
-  opencv_test12();
+//  opencv_test12();
+//  opencv_test13();
+//  opencv_test14();
+//  opencv_test15();
+//  opencv_test16();
+//  opencv_test17();
+
+//  HomogeneousSmoothing();
+//  GaussianSmoothing();
+//  MedianSmoothing();
+//  BilateralSmoothing();
+
+//  ImageContrastChange();
+//  VideoContrastChange();
+
+//  HistogramEqualizationGrayscaleImage();
+  HistogramEqualizationColorImage(); // not working
+
+//  ImageBrightnesChange();
+//  VideoBrightnessChange();
 
   return 0;
 
