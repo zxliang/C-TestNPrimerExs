@@ -51,3 +51,27 @@ void test3()
   container1[8]--;
   for (auto& x: container1) cout << "" << x.first << ":" << x.second << endl;
 }
+
+void test4()
+{
+  int i, n;
+  int *p;
+  cout << "# of numbers to be typed: " << endl;
+  cin >> n;
+  p = new (nothrow) int[n];
+  if (p == nullptr)
+	cout << "Error: memory could not be allocated!" << endl;
+  else {
+	for (i = 0; i < n; i++) {
+	  cout << "Enter number: ";
+	  // cin >> *(p + i);
+	  cin >> p[i];
+	}
+	cout << "You have entered: ";
+	for (i = 0; i < n; i++) {
+	  // cout << *(p + i) << ", ";
+	  cout << p[i] << ", ";
+	}
+	delete[] p;
+  }
+}

@@ -4,6 +4,7 @@
 #include <iostream>
 #include <string>
 #include <unordered_map>
+#include <new>
 
 using namespace std;
 
@@ -19,5 +20,6 @@ int ex1_22();
 void test1();
 void test2();
 void test3();
+void test4();
 
 #endif

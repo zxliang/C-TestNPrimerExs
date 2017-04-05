@@ -9,7 +9,7 @@ int main(int argc, char* argv[])
   cout << "Number of input parameters: " << endl;
   cout << argc << endl;
 
-  cout << "start testing functions!" << endl;
+  cout << "start testing functions!\n" << endl;
 /*
   int a(10), b(15);
   cout << "a: " << a << endl;
@@ -33,6 +33,7 @@ int main(int argc, char* argv[])
 //  test1();
 //  test2();
 //  test3();
+//  test4();
 
 //  opencv_test1();
 //  opencv_test1_1();
@@ -64,7 +65,7 @@ int main(int argc, char* argv[])
 //  VideoContrastChange();
 
 //  HistogramEqualizationGrayscaleImage();
-  HistogramEqualizationColorImage(); // not working
+//  HistogramEqualizationColorImage(); // not working
 
 //  ImageBrightnesChange();
 //  VideoBrightnessChange();
