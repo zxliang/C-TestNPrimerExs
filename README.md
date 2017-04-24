@@ -1,6 +1,5 @@
 ##### C++ test and Primer Exercise
 ##### Project _Kraken_
-##### A digital playground deeply hidden
 ##### Definitely ~~not~~ for escaping the boring PhD life
 
 As a **starter**, trying a quote:
