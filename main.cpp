@@ -71,5 +71,4 @@ int main(int argc, char* argv[])
 //  VideoBrightnessChange();
 
   return 0;
-
 }
