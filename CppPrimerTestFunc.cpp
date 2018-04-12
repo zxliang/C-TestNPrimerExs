@@ -75,3 +75,18 @@ void test4()
 	delete[] p;
   }
 }
+
+// implement data structure Trie
+void test5()
+{
+  cout << "Implementation of Trie." << endl;
+  Trie myTrie;
+  myTrie.insert("leetcode");
+
+  string res = myTrie.search("leet") ? "found." : "not found.";
+  cout << "leet is " << res << endl;
+
+  res = myTrie.startWith("leet") ? "found." : "not found.";
+  cout << "leet as a start " << res << endl;
+
+}

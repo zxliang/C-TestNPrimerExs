@@ -5,6 +5,9 @@
 #include <string>
 #include <unordered_map>
 #include <new>
+#include <cstringt.h>
+
+#include "MyTrie.h"
 
 using namespace std;
 
@@ -16,10 +19,12 @@ void ex1_20();
 void ex1_21();
 int ex1_22();
 
+
 // CppPrimerTestFunc.cpp
 void test1();
 void test2();
 void test3();
 void test4();
+void test5();
 
 #endif

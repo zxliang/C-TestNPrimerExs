@@ -34,6 +34,7 @@ int main(int argc, char* argv[])
 //  test2();
 //  test3();
 //  test4();
+//  test5(); // implement data structure Trie
 
 //  opencv_test1();
 //  opencv_test1_1();
