@@ -85,3 +85,23 @@ int ex1_22()
   }
   return 0;
 }
+
+// Exercise 1.23
+void ex1_23()
+{
+  Sales_item curItem, preItem;
+  if (cin >> preItem) {
+	int cnt = 1;
+	while (cin >> curItem) {
+	  if (curItem.isbn() == preItem.isbn()) {
+		cnt++;
+	  } else {
+		cout << preItem.isbn() << " occur: " << cnt << " times." << endl;
+		preItem = curItem;
+		cnt = 1;
+	  }
+	}
+	cout << preItem.isbn() << " occur: " << cnt << " times." << endl;
+  }
+
+}
