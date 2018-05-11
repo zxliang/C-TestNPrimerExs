@@ -19,6 +19,7 @@ void ex1_20();
 void ex1_21();
 int ex1_22();
 void ex1_23();
+int ex1_25();
 
 // CppPrimerTestFunc.cpp
 void test1();

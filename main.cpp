@@ -29,7 +29,8 @@ int main(int argc, char* argv[])
 //  ex1_20();
 //  ex1_21();
 //  ex1_22();
-  ex1_23();
+//  ex1_23();
+  ex1_25();
 
 //  test1();
 //  test2();
